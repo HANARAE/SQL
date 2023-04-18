@@ -72,7 +72,7 @@ WHERE rn BETWEEN 41 AND 50;
 SELECT * 
 FROM 
     (
-    SELECT ROWNUM AS rn, employee_id, first_name, PHONE_NUMBER, hire_date
+    SELECT ROWNUM AS rn, employee_id, first_name, phone_number, hire_date
     FROM 
         (
         SELECT *
@@ -83,5 +83,94 @@ FROM
 WHERE rn BETWEEN 31 AND 40;
 
 
+/*
+문제 6.
+employees테이블 departments테이블을 left 조인하세요
+조건) 직원아이디, 이름(성, 이름), 부서아이디, 부서명 만 출력합니다.
+조건) 직원아이디 기준 오름차순 정렬
+*/
+SELECT e.employee_id, e.first_name || ' ' || e.last_name AS full_name,
+       d.department_id, d.department_name
+FROM employees e
+LEFT JOIN departments d
+ON e.department_id = d.department_id
+ORDER BY employee_id ASC;
 
 
+/*
+문제 7.
+문제 6의 결과를 (스칼라 쿼리)로 동일하게 조회하세요
+*/
+SELECT
+    e.employee_id, e.first_name || ' ' || e.last_name AS full_name, e.department_id,
+    (
+    SELECT department_name
+    FROM departments d
+    WHERE d.department_id = e.department_id
+    ) AS department_name
+FROM employees e
+ORDER BY employee_id ASC;
+
+
+/*
+문제 8.
+departments테이블 locations테이블을 left 조인하세요
+조건) 부서아이디, 부서이름, 매니저아이디, 로케이션아이디, 스트릿_어드레스, 포스트 코드, 시티 만 출력합니다
+조건) 부서아이디 기준 오름차순 정렬
+*/
+SELECT 
+    d.department_id, d.department_name, d.manager_id, d.location_id,
+    loc.street_address, loc.postal_code, loc.city
+FROM departments d
+LEFT JOIN locations loc
+ON d.location_id = loc.location_id
+ORDER BY department_id ASC;
+
+
+/*
+문제 9.
+문제 8의 결과를 (스칼라 쿼리)로 동일하게 조회하세요
+*/
+SELECT
+    department_id, department_name, manager_id, location_id,
+    (SELECT street_address
+    FROM locations loc
+    WHERE d.location_id = loc.location_id
+    ) AS stree_address,
+    (SELECT postal_code
+    FROM locations loc
+    WHERE d.location_id = loc.location_id
+    ) AS postal_code,
+    (SELECT city
+    FROM locations loc
+    WHERE d.location_id = loc.location_id
+    ) AS city
+FROM departments d
+ORDER BY department_id ASC;
+
+/*
+문제 10.
+locations테이블 countries 테이블을 left 조인하세요
+조건) 로케이션아이디, 주소, 시티, country_id, country_name 만 출력합니다
+조건) country_name기준 오름차순 정렬
+*/
+SELECT
+    loc.location_id, loc.street_address, loc.city, loc.country_id,
+    con.country_name
+FROM locations loc
+LEFT JOIN countries con
+ON loc.country_id = con.country_id
+ORDER BY con.country_name ASC;
+
+
+/*
+문제 11.
+문제 10의 결과를 (스칼라 쿼리)로 동일하게 조회하세요
+*/
+SELECT l.location_id, l.street_address, l.city, l.country_id,
+    (SELECT country_name
+    FROM countries c
+    WHERE c.country_id = l.country_id
+    ) AS country_name
+FROM locations l
+ORDER BY country_name ASC;
